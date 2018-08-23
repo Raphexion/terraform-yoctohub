@@ -1,0 +1,43 @@
+- hosts: all
+  tasks:
+    - name: Create a partition
+      parted:
+        device: /dev/sda
+        number: 1
+        state: present
+
+    - name: Create filesystem
+      filesystem:
+        fstype: ext4
+        dev: /dev/sda1
+
+    - name: Mount up device by label
+      mount:
+        path: /srv/disk
+        src: /dev/sda1
+        fstype: ext4
+        state: mounted
+
+    - name: Install yocto packages
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - gawk
+          - wget
+          - git-core
+          - diffstat
+          - unzip
+          - texinfo
+          - gcc-multilib
+          - build-essential
+          - chrpath
+          - socat
+          - libsdl1.2-dev
+          - xterm
+
+    - name: Get Yocto
+      git:
+        repo: git://git.yoctoproject.org/poky
+        dest: /srv/disk/poky
+        version: sumo
