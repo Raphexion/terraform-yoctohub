@@ -7,7 +7,7 @@ resource "digitalocean_volume" "foobar" {
 
 resource "digitalocean_droplet" "foobar" {
   name       = "baz"
-  size       = "1gb"
+  size       = "4gb"
   image      = "ubuntu-18-04-x64"
   region     = "nyc1"
   volume_ids = ["${digitalocean_volume.foobar.id}"]
@@ -31,6 +31,10 @@ resource "digitalocean_droplet" "foobar" {
   }
 
   provisioner "local-exec" {
+    environment {
+      ANSIBLE_HOST_KEY_CHECKING = "False"
+    }
+
     command = "ansible-playbook -u root -i '${digitalocean_droplet.foobar.ipv4_address},' --private-key ${var.pvt_key} provision.yml"
   }
 }
